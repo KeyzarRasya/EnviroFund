@@ -43,19 +43,19 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-//    @Bean
-//    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-//        return http
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/charity/create").authenticated()
-//                        .requestMatchers("/user/donate").authenticated()
-//                        .requestMatchers("/user/all").authenticated()
-//                        .requestMatchers("/charity/verify/**").hasRole("ADMIN")
-//                        .anyRequest().permitAll())
-//                .sessionManagement(session -> session.maximumSessions(1))
-//                .formLogin(Customizer.withDefaults())
-//                .httpBasic(Customizer.withDefaults())
-//                .build();
-//    }
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        return http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/charity/create").authenticated()
+                        .requestMatchers("/user/donate").authenticated()
+                        .requestMatchers("/user/all").authenticated()
+                        .requestMatchers("/charity/verify/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
+                .sessionManagement(session -> session.maximumSessions(1))
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults())
+                .build();
+    }
 }
