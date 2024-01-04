@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.Getter;
-import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,14 +37,14 @@ public class UserController {
             new HttpSessionSecurityContextRepository();
 
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     private ResponseEntity<?> createUser(@RequestBody User user){
         userService.addUser(user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all")
-    private List<User> allUser(){
+    public List<User> allUser(){
         return userService.allUSer();
     }
 
@@ -54,7 +53,7 @@ public class UserController {
             Authentication authentication,
             @PathVariable Long charityId,
             @PathVariable BigDecimal amount){
-        System.out.println(amount);
+        System.out.println(amount + authentication.getName() + charityId);
         userService.donate(authentication.getName(), amount, charityId);
         return ResponseEntity.ok("Success");
     }
@@ -84,6 +83,8 @@ public class UserController {
         securityContextRepositor.saveContext(context, request,response);
         return ResponseEntity.ok(context.getAuthentication());
     }
+
+
 
 
 

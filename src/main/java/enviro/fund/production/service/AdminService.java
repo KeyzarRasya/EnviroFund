@@ -2,50 +2,32 @@ package enviro.fund.production.service;
 
 import enviro.fund.production.exception.TransactionalException;
 import enviro.fund.production.model.Charity;
-import enviro.fund.production.model.User;
+import enviro.fund.production.model.Vehicle;
 import enviro.fund.production.repository.CharityRepository;
-import enviro.fund.production.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import enviro.fund.production.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CharityService {
+public class AdminService {
+
     @Autowired
     private CharityRepository charityRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private VehicleRepository vehicleRepository;
 
-    @Transactional(rollbackOn = UsernameNotFoundException.class)
-    public void createCharity(String username, Charity charity){
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if(!userOptional.isPresent()) throw new UsernameNotFoundException("Not found");
-        charity.setHost(userOptional.get());
-        charity.setVerified(false);
-        charity.setComplete(false);
-        charity.setFundedMoney(BigDecimal.ZERO);
-        charityRepository.save(charity);
-    }
-
-    public List<Charity> verifiedCharity(){
-        List<Charity> charities = charityRepository.findAll();
-        Iterator<Charity> iterator = charities.iterator();
-        List<Charity> verified = new ArrayList<>();
-        while(iterator.hasNext()){
-            Charity charity = iterator.next();
-            if(charity.isVerified()){
-                verified.add(charity);
-            }
-        }
-        return verified;
+    public void addVehicle(Vehicle vehicle){
+        if(vehicle.getType().name().equals("MOTORCYCLE")) vehicle.setCost(50000);
+        else if(vehicle.getType().name().equals("BIKE")) vehicle.setCost(25000);
+        else if (vehicle.getType().name().equals("ELECTRICCAR")) vehicle.setCost(10000);
+        vehicle.setIsAvailable(true);
+        vehicleRepository.save(vehicle);
     }
 
     public List<Charity> notVerifiedCharity(){
@@ -61,8 +43,6 @@ public class CharityService {
         }
         return notVerified;
     }
-
-    @Transactional(rollbackOn = TransactionalException.class)
     public void verify(Long charityId)throws TransactionalException {
         Optional<Charity> optionalCharity = charityRepository.findById(charityId);
         if(optionalCharity.isEmpty()){
@@ -72,5 +52,9 @@ public class CharityService {
         if(charity.isVerified()) throw new TransactionalException("Already verified");
         charity.setVerified(true);
         charityRepository.save(charity);
+    }
+
+    public void deleteAll(){
+        charityRepository.deleteAll();
     }
 }
